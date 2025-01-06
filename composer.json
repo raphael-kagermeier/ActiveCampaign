@@ -35,8 +35,7 @@
     },
     "autoload": {
         "psr-4": {
-            "PerformRomance\\ActiveCampaign\\": "src/",
-            "PerformRomance\\ActiveCampaign\\Database\\Factories\\": "database/factories/"
+            "PerformRomance\\ActiveCampaign\\": "src/"
         }
     },
     "autoload-dev": {
