@@ -8,6 +8,7 @@ use PerformRomance\ActiveCampaign\Exceptions\ActiveCampaignException;
 use PerformRomance\ActiveCampaign\Exceptions\ValidationException;
 use PerformRomance\ActiveCampaign\Support\Request;
 use PerformRomance\ActiveCampaign\Services\TagManager;
+use PerformRomance\ActiveCampaign\Services\FieldManager;
 
 class Contact
 {
@@ -17,6 +18,7 @@ class Contact
     public function __construct(
         protected readonly Request $request,
         protected readonly TagManager $tagManager,
+        protected readonly FieldManager $fieldManager,
     ) {}
 
     /** 
@@ -25,6 +27,8 @@ class Contact
      */
     public function sync(): self
     {
+
+        $this->handleCustomFields();
 
         $data = $this->getContactData()->toSyncData();
 
@@ -69,6 +73,19 @@ class Contact
         $this->contactData = $contactData instanceof ContactDto
             ? $contactData
             : ContactDto::fromArray($contactData);
+        return $this;
+    }
+
+    public function handleCustomFields(): self
+    {
+        if (empty($this->getContactData()->custom_fields)) {
+            return $this;
+        }
+
+        $fieldValues = $this->fieldManager->prepareFieldValues($this->getContactData()->custom_fields);
+
+        $this->contactData = $this->contactData->withFieldValues($fieldValues);
+
         return $this;
     }
 

@@ -24,6 +24,7 @@ class ContactDto
         public readonly ?array $links,
         public readonly ?int $organization_id,
         public readonly ?array $fieldValues,
+        public readonly ?array $custom_fields,
     ) {}
 
     public static function fromResponse(object $response): self
@@ -50,6 +51,7 @@ class ContactDto
             links: (array) ($contact->links ?? []),
             organization_id: $contact->orgid ?? null,
             fieldValues: (array) ($contact->fieldValues ?? []),
+            custom_fields: (array) ($contact->custom_fields ?? []),
         );
     }
 
@@ -75,6 +77,7 @@ class ContactDto
             links: $data['links'] ?? [],
             organization_id: $data['organization_id'] ?? null,
             fieldValues: $data['fieldValues'] ?? [],
+            custom_fields: $data['custom_fields'] ?? [],
         );
     }
 
@@ -93,5 +96,13 @@ class ContactDto
         });
 
         return $data;
+    }
+
+    public function withFieldValues(array $fieldValues): self
+    {
+        return new self(...[
+            ...get_object_vars($this),
+            'fieldValues' => $fieldValues,
+        ]);
     }
 }

@@ -7,6 +7,7 @@ use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use PerformRomance\ActiveCampaign\Services\TagManager;
 use PerformRomance\ActiveCampaign\Support\Request;
+use PerformRomance\ActiveCampaign\Services\FieldManager;
 
 class ActiveCampaignServiceProvider extends PackageServiceProvider
 {
@@ -47,7 +48,8 @@ class ActiveCampaignServiceProvider extends PackageServiceProvider
         $this->app->singleton(Contact::class, function ($app) {
             return new Contact(
                 $app->make(Request::class),
-                $app->make(TagManager::class)
+                $app->make(TagManager::class),
+                $app->make(FieldManager::class)
             );
         });
 
