@@ -5,9 +5,11 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use PerformRomance\ActiveCampaign\ActiveCampaign;
+use PerformRomance\ActiveCampaign\Contact;
 use PerformRomance\ActiveCampaign\DataTransferObjects\ContactDto;
 use PerformRomance\ActiveCampaign\Exceptions\ValidationException;
 use PerformRomance\ActiveCampaign\Exceptions\ActiveCampaignException;
+use PerformRomance\ActiveCampaign\Services\TagManager;
 use PerformRomance\ActiveCampaign\Support\Request;
 
 beforeEach(function () {
@@ -31,9 +33,10 @@ function createMockedActiveCampaign(Response $response): ActiveCampaign
         $client
     );
 
-    return new ActiveCampaign(
-        $request
-    );
+    $tagManager = new TagManager($request);
+    $contact = new Contact($request, $tagManager);
+
+    return new ActiveCampaign($request, $contact);
 }
 
 it('can sync a contact', function () {
@@ -84,7 +87,15 @@ it('can sync a contact', function () {
 });
 
 it('validates contact data', function () {
-    $activeCampaign = new ActiveCampaign();
+    $request = new Request(
+        config('activecampaign.api_url'),
+        config('activecampaign.api_key'),
+        config('activecampaign.api_version')
+    );
+
+    $tagManager = new TagManager($request);
+    $contact = new Contact($request, $tagManager);
+    $activeCampaign = new ActiveCampaign($request, $contact);
 
     $activeCampaign->contact()
         ->setContactData([

@@ -7,13 +7,16 @@ use PerformRomance\ActiveCampaign\DataTransferObjects\ContactDto;
 use PerformRomance\ActiveCampaign\Exceptions\ActiveCampaignException;
 use PerformRomance\ActiveCampaign\Exceptions\ValidationException;
 use PerformRomance\ActiveCampaign\Support\Request;
+use PerformRomance\ActiveCampaign\Services\TagManager;
 
 class Contact
 {
     protected ContactDto $contactData;
 
+    protected array $tags = [];
     public function __construct(
         protected readonly Request $request,
+        protected readonly TagManager $tagManager,
     ) {}
 
     /** 
@@ -73,6 +76,79 @@ class Contact
         $this->contactData = $contactData instanceof ContactDto
             ? $contactData
             : ContactDto::fromArray($contactData);
+        return $this;
+    }
+
+    public function addTag(string $tag): self
+    {
+        $this->tags[] = $tag;
+        return $this;
+    }
+
+    public function setTags(array $tags): self
+    {
+        $this->tags = $tags;
+        return $this;
+    }
+
+    public function getTags(): array
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Apply tags to the current contact
+     * @param array|string|null $tags Optional tags to apply. If not provided, uses previously set tags.
+     * @throws ActiveCampaignException
+     */
+    public function applyTags(array|string|null $tags = null): self
+    {
+        if ($tags !== null) {
+            $this->setTags(is_array($tags) ? $tags : [$tags]);
+        }
+
+        if (empty($this->tags)) {
+            return $this;
+        }
+
+        $tags = $this->tagManager->getOrCreate($this->tags);
+        $contactId = $this->getContactData()->id;
+
+        if (!$contactId) {
+            throw new ActiveCampaignException('Contact ID not found');
+        }
+
+        $this->tagManager->attachToContact($contactId, $tags);
+
+        return $this;
+    }
+
+    /**
+     * Remove a tag from the contact
+     * @throws ActiveCampaignException
+     */
+    public function removeTag(string $tag): self
+    {
+        $contactId = $this->getContactData()->id;
+        if (!$contactId) {
+            throw new ActiveCampaignException('Contact ID not found');
+        }
+
+        $this->tagManager->detachFromContact($contactId, $tag);
+        $this->tags = array_values(array_filter($this->tags, fn($t) => $t !== $tag));
+
+        return $this;
+    }
+
+    /**
+     * Remove multiple tags from the contact
+     * @throws ActiveCampaignException
+     */
+    public function removeTags(array $tags): self
+    {
+        foreach ($tags as $tag) {
+            $this->removeTag($tag);
+        }
         return $this;
     }
 }

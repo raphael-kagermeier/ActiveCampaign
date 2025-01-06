@@ -5,6 +5,8 @@ namespace PerformRomance\ActiveCampaign;
 use PerformRomance\ActiveCampaign\Commands\ActiveCampaignCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use PerformRomance\ActiveCampaign\Services\TagManager;
+use PerformRomance\ActiveCampaign\Support\Request;
 
 class ActiveCampaignServiceProvider extends PackageServiceProvider
 {
@@ -21,5 +23,45 @@ class ActiveCampaignServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasMigration('create_activecampaign_table')
             ->hasCommand(ActiveCampaignCommand::class);
+    }
+
+    public function packageRegistered(): void
+    {
+        // Register the Request class
+        $this->app->singleton(Request::class, function ($app) {
+            return new Request(
+                config('activecampaign.api_url'),
+                config('activecampaign.api_key'),
+                config('activecampaign.api_version')
+            );
+        });
+
+        // Register the TagManager
+        $this->app->singleton(TagManager::class, function ($app) {
+            return new TagManager(
+                $app->make(Request::class)
+            );
+        });
+
+        // Register the Contact class
+        $this->app->singleton(Contact::class, function ($app) {
+            return new Contact(
+                $app->make(Request::class),
+                $app->make(TagManager::class)
+            );
+        });
+
+        // Register the main ActiveCampaign class
+        $this->app->singleton(ActiveCampaign::class, function ($app) {
+            return new ActiveCampaign(
+                $app->make(Request::class),
+                $app->make(Contact::class)
+            );
+        });
+
+        // Register facade
+        $this->app->bind('activecampaign', function ($app) {
+            return $app->make(ActiveCampaign::class);
+        });
     }
 }
