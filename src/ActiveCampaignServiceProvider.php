@@ -2,9 +2,9 @@
 
 namespace PerformRomance\ActiveCampaign;
 
+use PerformRomance\ActiveCampaign\Commands\ActiveCampaignCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use PerformRomance\ActiveCampaign\Commands\ActiveCampaignCommand;
 
 class ActiveCampaignServiceProvider extends PackageServiceProvider
 {
