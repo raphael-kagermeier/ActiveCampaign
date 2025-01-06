@@ -3,11 +3,11 @@
 namespace PerformRomance\ActiveCampaign;
 
 use PerformRomance\ActiveCampaign\Commands\ActiveCampaignCommand;
-use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
+use PerformRomance\ActiveCampaign\Services\FieldManager;
 use PerformRomance\ActiveCampaign\Services\TagManager;
 use PerformRomance\ActiveCampaign\Support\Request;
-use PerformRomance\ActiveCampaign\Services\FieldManager;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class ActiveCampaignServiceProvider extends PackageServiceProvider
 {

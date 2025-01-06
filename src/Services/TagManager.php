@@ -3,7 +3,6 @@
 namespace PerformRomance\ActiveCampaign\Services;
 
 use PerformRomance\ActiveCampaign\Support\Request;
-use PerformRomance\ActiveCampaign\Exceptions\ActiveCampaignException;
 
 class TagManager
 {
@@ -17,7 +16,7 @@ class TagManager
             $this->request->getEndpoint('tags'),
             query: [
                 'filters[search][eq]' => $tag,
-                'orders[search]' => 'weight'
+                'orders[search]' => 'weight',
             ],
             method: 'GET'
         );
@@ -33,8 +32,8 @@ class TagManager
                 'tag' => [
                     'tag' => $tagName,
                     'tagType' => 'contact',
-                    'description' => ''
-                ]
+                    'description' => '',
+                ],
             ],
             method: 'POST'
         );
@@ -43,7 +42,7 @@ class TagManager
     public function getOrCreate(array|string $tags): array
     {
         $requestedTags = is_array($tags) ? $tags : [$tags];
-        $cacheKey = 'activecampaign_tags_' . md5(implode(',', $requestedTags));
+        $cacheKey = 'activecampaign_tags_'.md5(implode(',', $requestedTags));
 
         if ($cachedTags = cache()->get($cacheKey)) {
             return $cachedTags;
@@ -75,7 +74,7 @@ class TagManager
                     'contactTag' => [
                         'contact' => $contactId,
                         'tag' => $tag->id,
-                    ]
+                    ],
                 ],
                 method: 'POST'
             );
@@ -92,7 +91,7 @@ class TagManager
             method: 'GET'
         );
 
-        if (!empty($response->contactTags)) {
+        if (! empty($response->contactTags)) {
             foreach ($response->contactTags as $contactTag) {
                 if ($contactTag->tag === (string) $tagId) {
                     return (int) $contactTag->id;
@@ -106,7 +105,7 @@ class TagManager
     public function detachFromContact(int $contactId, string $tag): void
     {
         $foundTag = $this->search($tag);
-        if (!$foundTag) {
+        if (! $foundTag) {
             return;
         }
 

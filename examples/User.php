@@ -3,8 +3,8 @@
 namespace Examples;
 
 use Illuminate\Database\Eloquent\Model;
-use PerformRomance\ActiveCampaign\Contracts\ActiveCampaignSyncable;
 use PerformRomance\ActiveCampaign\Concerns\InteractsWithActiveCampaign;
+use PerformRomance\ActiveCampaign\Contracts\ActiveCampaignSyncable;
 
 class User extends Model implements ActiveCampaignSyncable
 {
@@ -45,7 +45,7 @@ class User extends Model implements ActiveCampaignSyncable
     /**
      * Get Tags that should be applied to ActiveCampaign contact.
      */
-    public function getActiveCampaignTags(): null|array
+    public function getActiveCampaignTags(): ?array
     {
         return null;
     }

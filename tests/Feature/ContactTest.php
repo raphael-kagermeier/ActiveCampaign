@@ -1,12 +1,11 @@
 <?php
 
-
 use GuzzleHttp\Psr7\Response;
 use Mockery;
 use PerformRomance\ActiveCampaign\ActiveCampaign;
 use PerformRomance\ActiveCampaign\DataTransferObjects\ContactDto;
-use PerformRomance\ActiveCampaign\Exceptions\ValidationException;
 use PerformRomance\ActiveCampaign\Exceptions\ActiveCampaignException;
+use PerformRomance\ActiveCampaign\Exceptions\ValidationException;
 use PerformRomance\ActiveCampaign\Support\Request;
 
 beforeEach(function () {
@@ -28,7 +27,7 @@ function createMockedActiveCampaign(Response $response): ActiveCampaign
     $mock->shouldReceive('make')
         ->once()
         ->andReturn(json_decode(json_encode([
-            'contact' => json_decode($response->getBody()->getContents())->contact
+            'contact' => json_decode($response->getBody()->getContents())->contact,
         ])));
 
     app()->instance(Request::class, $mock);

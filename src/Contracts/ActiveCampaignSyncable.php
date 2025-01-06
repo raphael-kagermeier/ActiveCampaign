@@ -20,5 +20,5 @@ interface ActiveCampaignSyncable
     /**
      * Get Tags that should be applied to ActiveCampaign contact.
      */
-    public function getActiveCampaignTags(): null|array;
+    public function getActiveCampaignTags(): ?array;
 }

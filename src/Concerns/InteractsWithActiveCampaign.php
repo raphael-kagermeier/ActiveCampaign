@@ -2,10 +2,10 @@
 
 namespace PerformRomance\ActiveCampaign\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
 use PerformRomance\ActiveCampaign\ActiveCampaign;
 use PerformRomance\ActiveCampaign\Contracts\ActiveCampaignSyncable;
 use PerformRomance\ActiveCampaign\Jobs\SyncWithActiveCampaign;
-use Illuminate\Database\Eloquent\Model;
 
 trait InteractsWithActiveCampaign
 {

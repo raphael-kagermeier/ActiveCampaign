@@ -15,7 +15,6 @@ return [
     'key' => env('ACTIVECAMPAIGN_KEY'),
     'version' => env('ACTIVECAMPAIGN_VERSION', '3'),
 
-
     /*
     |--------------------------------------------------------------------------
     | Synchronization Settings

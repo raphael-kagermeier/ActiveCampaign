@@ -6,23 +6,25 @@ use Illuminate\Support\Facades\Validator;
 use PerformRomance\ActiveCampaign\DataTransferObjects\ContactDto;
 use PerformRomance\ActiveCampaign\Exceptions\ActiveCampaignException;
 use PerformRomance\ActiveCampaign\Exceptions\ValidationException;
-use PerformRomance\ActiveCampaign\Support\Request;
-use PerformRomance\ActiveCampaign\Services\TagManager;
 use PerformRomance\ActiveCampaign\Services\FieldManager;
+use PerformRomance\ActiveCampaign\Services\TagManager;
+use PerformRomance\ActiveCampaign\Support\Request;
 
 class Contact
 {
     protected ContactDto $contactData;
 
     protected array $tags = [];
+
     public function __construct(
         protected readonly Request $request,
         protected readonly TagManager $tagManager,
         protected readonly FieldManager $fieldManager,
     ) {}
 
-    /** 
+    /**
      * Sync a contact with ActiveCampaign
+     *
      * @throws ValidationException|ActiveCampaignException
      */
     public function sync(): self
@@ -56,23 +58,20 @@ class Contact
         return $this;
     }
 
-
-    /**
-     * @return ContactDto
-     */
     public function getContactData(): ContactDto
     {
         return $this->contactData;
     }
 
     /**
-     * @param ContactDto $contactData
+     * @param  ContactDto  $contactData
      */
     public function setContactData(array|ContactDto $contactData): self
     {
         $this->contactData = $contactData instanceof ContactDto
             ? $contactData
             : ContactDto::fromArray($contactData);
+
         return $this;
     }
 
@@ -92,12 +91,14 @@ class Contact
     public function addTag(string $tag): self
     {
         $this->tags[] = $tag;
+
         return $this;
     }
 
     public function setTags(array $tags): self
     {
         $this->tags = $tags;
+
         return $this;
     }
 
@@ -108,7 +109,9 @@ class Contact
 
     /**
      * Apply tags to the current contact
-     * @param array|string|null $tags Optional tags to apply. If not provided, uses previously set tags.
+     *
+     * @param  array|string|null  $tags  Optional tags to apply. If not provided, uses previously set tags.
+     *
      * @throws ActiveCampaignException
      */
     public function applyTags(array|string|null $tags = null): self
@@ -124,7 +127,7 @@ class Contact
         $tags = $this->tagManager->getOrCreate($this->tags);
         $contactId = $this->getContactData()->id;
 
-        if (!$contactId) {
+        if (! $contactId) {
             throw new ActiveCampaignException('Contact ID not found');
         }
 
@@ -135,23 +138,25 @@ class Contact
 
     /**
      * Remove a tag from the contact
+     *
      * @throws ActiveCampaignException
      */
     public function removeTag(string $tag): self
     {
         $contactId = $this->getContactData()->id;
-        if (!$contactId) {
+        if (! $contactId) {
             throw new ActiveCampaignException('Contact ID not found');
         }
 
         $this->tagManager->detachFromContact($contactId, $tag);
-        $this->tags = array_values(array_filter($this->tags, fn($t) => $t !== $tag));
+        $this->tags = array_values(array_filter($this->tags, fn ($t) => $t !== $tag));
 
         return $this;
     }
 
     /**
      * Remove multiple tags from the contact
+     *
      * @throws ActiveCampaignException
      */
     public function removeTags(array $tags): self
@@ -159,6 +164,7 @@ class Contact
         foreach ($tags as $tag) {
             $this->removeTag($tag);
         }
+
         return $this;
     }
 }

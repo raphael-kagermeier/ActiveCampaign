@@ -15,7 +15,7 @@ class Request
         private readonly string $api_version,
         ?Client $client = null
     ) {
-        $this->client = $client ?? new Client();
+        $this->client = $client ?? new Client;
     }
 
     /**
@@ -33,18 +33,18 @@ class Request
             'verify' => false,
         ];
 
-        if (!empty($query)) {
+        if (! empty($query)) {
             $options['query'] = $query;
         }
 
-        if ($method !== 'GET' && !empty($data)) {
+        if ($method !== 'GET' && ! empty($data)) {
             $options['json'] = $data;
         }
 
         try {
             $response = $this->client->request($method, $endpoint, $options);
 
-            if (!in_array($response->getStatusCode(), [200, 201])) {
+            if (! in_array($response->getStatusCode(), [200, 201])) {
                 throw new ActiveCampaignException(
                     "Request failed with status code: {$response->getStatusCode()}"
                 );

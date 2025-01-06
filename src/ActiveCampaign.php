@@ -2,9 +2,9 @@
 
 namespace PerformRomance\ActiveCampaign;
 
-use PerformRomance\ActiveCampaign\Support\Request;
-use PerformRomance\ActiveCampaign\Services\TagManager;
 use PerformRomance\ActiveCampaign\Contracts\ActiveCampaignSyncable;
+use PerformRomance\ActiveCampaign\Services\TagManager;
+use PerformRomance\ActiveCampaign\Support\Request;
 
 class ActiveCampaign
 {

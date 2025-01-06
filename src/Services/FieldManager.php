@@ -3,7 +3,6 @@
 namespace PerformRomance\ActiveCampaign\Services;
 
 use PerformRomance\ActiveCampaign\Support\Request;
-use PerformRomance\ActiveCampaign\Exceptions\ActiveCampaignException;
 
 class FieldManager
 {
@@ -26,7 +25,7 @@ class FieldManager
 
     public function prepareFieldValues(array $fields): array
     {
-        $cacheKey = 'activecampaign_fields_' . md5(implode(',', array_keys($fields)));
+        $cacheKey = 'activecampaign_fields_'.md5(implode(',', array_keys($fields)));
 
         // if ($cachedFields = cache()->get($cacheKey)) {
         //     return $cachedFields;
