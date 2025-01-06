@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace PerformRomance\ActiveCampaign\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class ActiveCampaignCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'activecampaign';
 
     public $description = 'My command';
 
