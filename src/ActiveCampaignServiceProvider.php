@@ -30,9 +30,9 @@ class ActiveCampaignServiceProvider extends PackageServiceProvider
         // Register the Request class
         $this->app->singleton(Request::class, function ($app) {
             return new Request(
-                config('activecampaign.api_url'),
-                config('activecampaign.api_key'),
-                config('activecampaign.api_version')
+                config('activecampaign.url'),
+                config('activecampaign.key'),
+                config('activecampaign.version')
             );
         });
 
@@ -55,7 +55,8 @@ class ActiveCampaignServiceProvider extends PackageServiceProvider
         $this->app->singleton(ActiveCampaign::class, function ($app) {
             return new ActiveCampaign(
                 $app->make(Request::class),
-                $app->make(Contact::class)
+                $app->make(Contact::class),
+                $app->make(TagManager::class)
             );
         });
 

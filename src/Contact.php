@@ -26,14 +26,7 @@ class Contact
     public function sync(): self
     {
 
-        $dto = $this->getContactData();
-        $data = [
-            'email' => $dto->email,
-            'firstName' => $dto->first_name,
-            'lastName' => $dto->last_name,
-            'phone' => $dto->phone,
-            'fieldValues' => $dto->fieldValues,
-        ];
+        $data = $this->getContactData()->toSyncData();
 
         $validator = Validator::make($data, [
             'email' => 'required|email|max:255',

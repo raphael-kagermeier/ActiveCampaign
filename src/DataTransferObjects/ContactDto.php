@@ -77,4 +77,21 @@ class ContactDto
             fieldValues: $data['fieldValues'] ?? [],
         );
     }
+
+    public function toSyncData(): array
+    {
+        $data = [
+            'email' => $this->email,
+            'firstName' => $this->first_name,
+            'lastName' => $this->last_name,
+            'phone' => $this->phone,
+            'fieldValues' => $this->fieldValues,
+        ];
+
+        $data = array_filter($data, function ($value) {
+            return ! is_null($value) && $value !== '' && $value !== [];
+        });
+
+        return $data;
+    }
 }
