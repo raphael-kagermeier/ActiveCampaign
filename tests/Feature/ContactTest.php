@@ -1,42 +1,39 @@
 <?php
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
+
 use GuzzleHttp\Psr7\Response;
+use Mockery;
 use PerformRomance\ActiveCampaign\ActiveCampaign;
-use PerformRomance\ActiveCampaign\Contact;
 use PerformRomance\ActiveCampaign\DataTransferObjects\ContactDto;
 use PerformRomance\ActiveCampaign\Exceptions\ValidationException;
 use PerformRomance\ActiveCampaign\Exceptions\ActiveCampaignException;
-use PerformRomance\ActiveCampaign\Services\TagManager;
 use PerformRomance\ActiveCampaign\Support\Request;
 
 beforeEach(function () {
     config([
-        'activecampaign.api_url' => 'https://test.api.activecampaign.com',
-        'activecampaign.api_key' => 'fake-key-123',
-        'activecampaign.api_version' => '3',
+        'activecampaign.url' => 'https://test.api.activecampaign.com',
+        'activecampaign.key' => 'fake-key-123',
+        'activecampaign.version' => '3',
     ]);
 });
 
 function createMockedActiveCampaign(Response $response): ActiveCampaign
 {
-    $mock = new MockHandler([$response]);
-    $handlerStack = HandlerStack::create($mock);
-    $client = new Client(['handler' => $handlerStack]);
+    $mock = Mockery::mock(Request::class);
 
-    $request = new Request(
-        config('activecampaign.api_url'),
-        config('activecampaign.api_key'),
-        config('activecampaign.api_version'),
-        $client
-    );
+    $mock->shouldReceive('getEndpoint')
+        ->with('contact/sync')
+        ->andReturn('contact/sync');
 
-    $tagManager = new TagManager($request);
-    $contact = new Contact($request, $tagManager);
+    $mock->shouldReceive('make')
+        ->once()
+        ->andReturn(json_decode(json_encode([
+            'contact' => json_decode($response->getBody()->getContents())->contact
+        ])));
 
-    return new ActiveCampaign($request, $contact);
+    app()->instance(Request::class, $mock);
+
+    return app(ActiveCampaign::class);
 }
 
 it('can sync a contact', function () {
@@ -87,17 +84,12 @@ it('can sync a contact', function () {
 });
 
 it('validates contact data', function () {
-    $request = new Request(
-        config('activecampaign.api_url'),
-        config('activecampaign.api_key'),
-        config('activecampaign.api_version')
-    );
+    $mock = Mockery::mock(Request::class);
+    $mock->shouldNotReceive('make');
+    app()->instance(Request::class, $mock);
 
-    $tagManager = new TagManager($request);
-    $contact = new Contact($request, $tagManager);
-    $activeCampaign = new ActiveCampaign($request, $contact);
-
-    $activeCampaign->contact()
+    app(ActiveCampaign::class)
+        ->contact()
         ->setContactData([
             'firstName' => 'John',
             'lastName' => 'Doe',
@@ -107,11 +99,18 @@ it('validates contact data', function () {
 })->throws(ValidationException::class, 'The email field is required');
 
 it('throws exception on API error', function () {
-    $activeCampaign = createMockedActiveCampaign(
-        new Response(401, [], json_encode(['error' => 'Invalid API key']))
-    );
+    $mock = Mockery::mock(Request::class);
+    $mock->shouldReceive('getEndpoint')
+        ->with('contact/sync')
+        ->andReturn('contact/sync');
+    $mock->shouldReceive('make')
+        ->once()
+        ->andThrow(new ActiveCampaignException('Invalid API key'));
 
-    $activeCampaign->contact()
+    app()->instance(Request::class, $mock);
+
+    app(ActiveCampaign::class)
+        ->contact()
         ->setContactData([
             'email' => 'test@example.com',
         ])

@@ -39,8 +39,6 @@ class FieldManager
                     'field' => (string) $foundField->id,
                     'value' => $value,
                 ];
-
-                dd($fieldValues, $foundField);
             }
         }
 
