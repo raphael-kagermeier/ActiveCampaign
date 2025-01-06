@@ -61,7 +61,7 @@ class TagManager
             }
         }
 
-        cache()->put($cacheKey, $existingTags, now()->addHour());
+        cache()->put($cacheKey, $existingTags, now()->addMinutes(config('activecampaign.sync.tag_cache_duration')));
 
         return $existingTags;
     }
